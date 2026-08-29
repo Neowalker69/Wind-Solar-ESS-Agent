@@ -28,7 +28,7 @@
     "next": "15.5.20",
     "postprocessing": "^6.39.1",
     "protobufjs": "7.6.5",
-    "react": "19.1.0",
+    "react": "19.2.8",
     "react-dom": "19.1.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
@@ -42,7 +42,7 @@
     "@swc/jest": "0.2.39",
     "@types/jest": "30.0.0",
     "@types/node": "22.15.3",
-    "@types/react": "19.1.2",
+    "@types/react": "19.2.18",
     "@types/react-dom": "19.1.2",
     "jest": "30.4.2",
     "typescript": "5.8.3"
