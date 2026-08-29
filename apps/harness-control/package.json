@@ -24,7 +24,7 @@
     "@react-three/fiber": "^9.6.1",
     "@react-three/postprocessing": "^3.0.4",
     "@tanstack/react-query": "^5.66.8",
-    "lucide-react": "^0.456.0",
+    "lucide-react": "^1.34.0",
     "next": "15.5.20",
     "postprocessing": "^6.39.1",
     "protobufjs": "7.6.5",
