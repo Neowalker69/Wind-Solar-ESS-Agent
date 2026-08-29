@@ -1,5 +1,9 @@
 # wind-solar-ESS-Agent
 
+<p align="center">
+  <img src="digital-twin-agent-demo.gif" alt="Digital Twin Agent 发布演示" width="900">
+</p>
+
 一个面向风、光、储工业场站的 AI Agent Harness 个人作品集项目。它负责接收 Agent 请求、编排上下文和工作流、调用工具、连接站点数据，并返回可追踪的回答与执行事件。
 
 > **项目定位：** 本仓库用于个人技术展示、学习与本地演示，不是生产安全基线，也不应直接连接真实工业控制系统。公开部署前需要自行补齐企业级身份认证、TLS、网络隔离、持久化限流、密钥托管、监控审计和数据合规措施。
@@ -28,8 +32,6 @@ DeepSeek 或 百炼
 ```
 
 ![Agent Harness 架构摘要图](architecture-summary.png)
-
-![Digital Twin Agent 发布演示](digital-twin-agent-发布版.gif)
 
 默认 Compose 服务包括：
 
