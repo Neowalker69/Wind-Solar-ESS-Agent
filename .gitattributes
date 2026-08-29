@@ -1,5 +1,6 @@
 *.glb binary
 *.png binary
+*.gif binary
 *.ttf binary
 *.wasm binary
 

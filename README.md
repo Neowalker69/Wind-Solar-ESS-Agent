@@ -29,6 +29,8 @@ DeepSeek 或 百炼
 
 ![Agent Harness 架构摘要图](architecture-summary.png)
 
+![Digital Twin Agent 发布演示](digital-twin-agent-发布版.gif)
+
 默认 Compose 服务包括：
 
 - `api-gateway`：Agent Runtime、HTTP API 和内部 gRPC Runtime；
