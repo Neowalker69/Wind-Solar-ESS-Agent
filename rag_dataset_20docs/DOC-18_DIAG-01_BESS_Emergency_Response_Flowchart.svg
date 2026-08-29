@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg width="900" height="600" xmlns="http://www.w3.org/2000/svg" font-family="Arial, sans-serif">
+  <rect width="100%" height="100%" fill="#f8f9fa"/>
+  
+  <!-- Title -->
+  <text x="450" y="40" font-size="20" font-weight="bold" text-anchor="middle" fill="#212529">
+    BESS 储能系统热失控三级应急响应决策流程图 (DOC-18)
+  </text>
+  <text x="450" y="65" font-size="12" text-anchor="middle" fill="#6c757d">
+    标准依据: SOP-E01-2026 / GB/T 36276 / 电站二次安全防护规程
+  </text>
+
+  <!-- Stage 1 Box -->
+  <g transform="translate(50, 100)">
+    <rect width="230" height="180" rx="10" fill="#e3f2fd" stroke="#1e88e5" stroke-width="2"/>
+    <text x="115" y="30" font-size="14" font-weight="bold" text-anchor="middle" fill="#0d47a1">一极预警 (Stage 1)</text>
+    <line x1="20" y1="40" x2="210" y2="40" stroke="#1e88e5" stroke-width="1"/>
+    <text x="15" y="65" font-size="11" fill="#1565c0">• CO 浓度 &gt; 20 ppm</text>
+    <text x="15" y="85" font-size="11" fill="#1565c0">• VOC 挥发气体异常升</text>
+    <text x="15" y="115" font-size="11" font-weight="bold" fill="#0d47a1">响应处置行为:</text>
+    <text x="15" y="135" font-size="11" fill="#212529">1. 开启电池舱强排风风机</text>
+    <text x="15" y="155" font-size="11" fill="#212529">2. SCADA 下发 E-BMS-401 预警</text>
+  </g>
+
+  <!-- Arrow 1 -> 2 -->
+  <path d="M 280 190 L 330 190" stroke="#424242" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Stage 2 Box -->
+  <g transform="translate(335, 100)">
+    <rect width="230" height="180" rx="10" fill="#fff3e0" stroke="#fb8c00" stroke-width="2"/>
+    <text x="115" y="30" font-size="14" font-weight="bold" text-anchor="middle" fill="#e65100">二级告警 (Stage 2)</text>
+    <line x1="20" y1="40" x2="210" y2="40" stroke="#fb8c00" stroke-width="1"/>
+    <text x="15" y="65" font-size="11" fill="#ef6c00">• 单体温度 &gt; 65°C</text>
+    <text x="15" y="85" font-size="11" fill="#ef6c00">• 温升速率 dT/dt &gt; 2.0°C/min</text>
+    <text x="15" y="115" font-size="11" font-weight="bold" fill="#e65100">响应处置行为:</text>
+    <text x="15" y="135" font-size="11" fill="#212529">1. 切断故障电池簇 DC 断路器</text>
+    <text x="15" y="155" font-size="11" fill="#212529">2. 液冷泵功率调至 100% 强冷</text>
+  </g>
+
+  <!-- Arrow 2 -> 3 -->
+  <path d="M 565 190 L 615 190" stroke="#424242" stroke-width="3" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- Stage 3 Box -->
+  <g transform="translate(620, 100)">
+    <rect width="230" height="180" rx="10" fill="#ffebee" stroke="#e53935" stroke-width="2"/>
+    <text x="115" y="30" font-size="14" font-weight="bold" text-anchor="middle" fill="#b71c1c">三级急停 (Stage 3)</text>
+    <line x1="20" y1="40" x2="210" y2="40" stroke="#e53935" stroke-width="1"/>
+    <text x="15" y="65" font-size="11" fill="#c62828">• 烟感+温感双重触发</text>
+    <text x="15" y="85" font-size="11" fill="#c62828">• 极早期喷放 / 产生明火</text>
+    <text x="15" y="115" font-size="11" font-weight="bold" fill="#b71c1c">响应处置行为:</text>
+    <text x="15" y="135" font-size="11" fill="#212529">1. 跳开 35kV PCS 主断路器</text>
+    <text x="15" y="155" font-size="11" fill="#212529">2. 关风阀，延时30s喷放灭火剂</text>
+  </g>
+
+  <!-- Bottom Verification Workflow -->
+  <g transform="translate(150, 330)">
+    <rect width="600" height="220" rx="10" fill="#ffffff" stroke="#9e9e9e" stroke-width="1.5" stroke-dasharray="5,5"/>
+    <text x="300" y="30" font-size="14" font-weight="bold" text-anchor="middle" fill="#37474f">急停后恢复与隔离复核规则 (EHS Standard)</text>
+    
+    <rect x="30" y="50" width="240" height="60" rx="5" fill="#f5f5f5" stroke="#757575"/>
+    <text x="150" y="75" font-size="11" font-weight="bold" text-anchor="middle">现场气体检毒与安全排空</text>
+    <text x="150" y="95" font-size="10" text-anchor="middle" fill="#616161">CO &lt; 5 ppm, O2 &gt; 20.9% 穿正压式呼吸器</text>
+
+    <path d="M 270 80 L 330 80" stroke="#424242" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+    <rect x="330" y="50" width="240" height="60" rx="5" fill="#f5f5f5" stroke="#757575"/>
+    <text x="450" y="75" font-size="11" font-weight="bold" text-anchor="middle">绝缘电阻摇测复核</text>
+    <text x="450" y="95" font-size="10" text-anchor="middle" fill="#616161">必须 R_iso &gt; 100 MΩ 绝缘合格</text>
+
+    <rect x="180" y="140" width="240" height="50" rx="5" fill="#e8f5e9" stroke="#43a047"/>
+    <text x="300" y="170" font-size="12" font-weight="bold" text-anchor="middle" fill="#1b5e20">由安监组长手签工单后方可复位</text>
+  </g>
+
+  <!-- Marker definition -->
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#424242"/>
+    </marker>
+  </defs>
+</svg>

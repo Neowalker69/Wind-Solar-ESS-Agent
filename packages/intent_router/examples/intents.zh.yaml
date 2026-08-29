@@ -1,0 +1,53 @@
+intents:
+  system.help:
+    label: 帮助
+    family: system
+    examples: ["/help", "帮助", "你能做什么"]
+  system.exit:
+    label: 退出
+    family: system
+    examples: ["/exit", "退出", "结束会话"]
+  data.query:
+    label: 数据查询
+    family: data
+    examples: ["查询 PCS_07 状态", "看一下储能柜温度", "读取逆变器遥测"]
+  diagnosis.alarm:
+    label: 告警诊断
+    family: diagnosis
+    examples: ["诊断 PCS_07 告警", "分析温度异常原因"]
+  code.change:
+    label: 代码变更
+    family: engineering
+    examples: ["改一下图表交互", "实现接口"]
+  chat.noise:
+    label: 无意义闲聊
+    family: chat
+    examples: ["哈哈", "随便聊聊"]
+  safety.violation:
+    label: 安全违规
+    family: safety
+    examples: ["写入 PLC 参数", "停止设备", "确认报警"]
+  skill.create:
+    label: 创建技能
+    family: skill
+    examples: ["把这次经验生成技能", "创建一个诊断 skill"]
+  report.generate:
+    label: 生成报告
+    family: report
+    examples: ["生成诊断报告", "输出运行报告"]
+  workorder.draft:
+    label: 工单草稿
+    family: workorder
+    examples: ["生成工单草稿", "创建维修任务草稿"]
+  sop.ingest:
+    label: SOP 导入
+    family: sop
+    examples: ["导入 SOP", "解析操作规程"]
+  sop.search:
+    label: SOP 查询
+    family: sop
+    examples: ["储能电池热失控怎么处置", "查询热失控处置流程", "查询电池故障码说明"]
+  replay.eval:
+    label: 回放评测
+    family: replay
+    examples: ["回放这个 run", "做一次 replay eval"]

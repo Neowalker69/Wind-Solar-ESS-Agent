@@ -1,0 +1,50 @@
+tools:
+  - tool_id: skill.skill_list
+    capability: skills
+    classification: authoritative
+    readable: true
+    dependencies: [skill_registry]
+    description: 列出已有 Skill 与 Playbook。
+    handler: packages.capabilities.knowledge.handlers:skill_list
+  - tool_id: skill.playbook_list
+    capability: skills
+    classification: authoritative
+    readable: true
+    dependencies: [skill_registry]
+    description: 列出已有 Playbook。
+    handler: packages.capabilities.knowledge.handlers:skill_list
+  - tool_id: skill.skill_view
+    capability: skills
+    classification: authoritative
+    readable: true
+    dependencies: [skill_registry]
+    description: 查看指定 Skill 内容。
+    handler: packages.capabilities.knowledge.handlers:skill_view
+  - tool_id: skill.search_skill
+    capability: skills
+    classification: authoritative
+    readable: true
+    dependencies: [skill_registry]
+    description: 搜索已激活 Skill。
+    handler: packages.capabilities.knowledge.handlers:search_skill
+  - tool_id: memory.session_search
+    capability: memory
+    classification: runtime
+    readable: true
+    dependencies: [session_search]
+    description: 搜索当前或历史会话。
+    handler: packages.capabilities.knowledge.handlers:session_search
+  - tool_id: memory.memory_get
+    capability: memory
+    classification: runtime
+    readable: true
+    dependencies: [memory_service]
+    description: 读取具体记忆条目。
+    handler: packages.capabilities.knowledge.handlers:memory_get
+  - tool_id: memory.memory_search
+    capability: memory
+    classification: runtime
+    readable: true
+    dependencies: [memory_service]
+    description: 搜索记忆条目。
+    handler: packages.capabilities.knowledge.handlers:memory_search

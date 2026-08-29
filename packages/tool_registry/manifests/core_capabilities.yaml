@@ -1,0 +1,73 @@
+tools:
+  - tool_id: runtime_context.get_current_user_context
+    capability: runtime_context
+    classification: runtime
+    readable: true
+    description: 获取当前用户、角色与站点上下文。
+    handler: packages.capabilities.runtime_context.handlers:get_current_user_context
+  - tool_id: runtime_context.get_session_context
+    capability: runtime_context
+    classification: runtime
+    readable: true
+    description: 获取当前运行与会话上下文。
+    handler: packages.capabilities.runtime_context.handlers:get_session_context
+  - tool_id: runtime_context.get_selected_asset_context
+    capability: runtime_context
+    classification: runtime
+    readable: true
+    description: 获取当前选中的资产上下文。
+    handler: packages.capabilities.runtime_context.handlers:get_selected_asset_context
+  - tool_id: runtime_context.get_environment_context
+    capability: runtime_context
+    classification: runtime
+    readable: true
+    description: 获取当前运行环境上下文。
+    handler: packages.capabilities.runtime_context.handlers:get_environment_context
+  - tool_id: runtime_context.get_policy_context
+    capability: runtime_context
+    classification: runtime
+    readable: true
+    description: 获取当前工具集策略上下文。
+    handler: packages.capabilities.runtime_context.handlers:get_policy_context
+  - tool_id: runtime_context.get_active_workflow_state
+    capability: runtime_context
+    classification: runtime
+    readable: true
+    description: 获取当前工作流状态。
+    handler: packages.capabilities.runtime_context.handlers:get_active_workflow_state
+  - tool_id: capability_discovery.search_tool
+    capability: capability_discovery
+    classification: runtime
+    readable: true
+    description: 在当前可见工具集中搜索工具。
+    handler: packages.capabilities.capability_discovery.handlers:search_tool
+  - tool_id: capability_discovery.tool_describe
+    capability: capability_discovery
+    classification: runtime
+    readable: true
+    description: 查看工具的完整声明。
+    handler: packages.capabilities.capability_discovery.handlers:tool_describe
+  - tool_id: capability_discovery.tool_call
+    capability: capability_discovery
+    classification: runtime
+    readable: true
+    description: 调用当前可见的工具。
+    handler: packages.capabilities.capability_discovery.handlers:tool_call
+  - tool_id: capability_discovery.list_visible_tools
+    capability: capability_discovery
+    classification: runtime
+    readable: true
+    description: 列出当前运行可见工具。
+    handler: packages.capabilities.capability_discovery.handlers:list_visible_tools
+  - tool_id: capability_discovery.explain_hidden_tool_reason
+    capability: capability_discovery
+    classification: runtime
+    readable: true
+    description: 解释工具未进入当前 Toolset 的原因。
+    handler: packages.capabilities.capability_discovery.handlers:explain_hidden_tool_reason
+  - tool_id: capability_discovery.resolve_toolset_profile
+    capability: capability_discovery
+    classification: runtime
+    readable: true
+    description: 解析当前运行的 Toolset Profile。
+    handler: packages.capabilities.capability_discovery.handlers:resolve_toolset_profile

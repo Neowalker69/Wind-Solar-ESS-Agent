@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python 3.11
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: astral-sh/setup-uv@v9.0.0
+        with:
+          enable-cache: true
+      - name: Install locked dependencies
+        run: uv sync --frozen --dev
+      - name: Run Python tests
+        run: uv run pytest -q
+      - name: Validate Docker Compose
+        env:
+          AGENT_HARNESS_MODEL_PROVIDER: deepseek
+          HARNESS_DB_PASSWORD: ci-database-password
+          CONTROL_RUNTIME_SHARED_SECRET: ci-runtime-secret
+          TOOL_GATEWAY_JWT_SECRET: ci-tool-jwt-secret
+          JWT_SECRET: ci-control-jwt-secret
+          CONTROL_PANEL_PASSWORD: admin123
+        run: docker compose --profile frontend --profile workers --profile tool-gateway config --quiet
+
+  harness-control:
+    name: Harness Control / Node 22
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/harness-control
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: apps/harness-control/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci
+      - name: Run tests
+        run: npm test
+      - name: Type-check
+        run: npm run typecheck
+      - name: Build
+        run: npm run build

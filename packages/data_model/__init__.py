@@ -1,0 +1,1 @@
+"""Industrial data model registry."""

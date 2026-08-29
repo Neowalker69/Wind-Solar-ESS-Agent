@@ -1,0 +1,189 @@
+name: wind-solar-ess-agent
+
+x-runtime-environment: &runtime-environment
+  DATABASE_URL: postgresql+asyncpg://${HARNESS_DB_USER:-agent}:${HARNESS_DB_PASSWORD}@postgres:5432/${HARNESS_DB_NAME:-agent_harness}
+  DBOS_SYSTEM_DATABASE_URL: postgresql+psycopg://${HARNESS_DB_USER:-agent}:${HARNESS_DB_PASSWORD}@postgres:5432/${HARNESS_DB_NAME:-agent_harness}
+  DBOS_APPLICATION_VERSION: ${DBOS_APPLICATION_VERSION:-agent-harness-provider-service-v1}
+  DBOS_EXECUTOR_ID: ${DBOS_EXECUTOR_ID:-agent-harness-api}
+  REDIS_URL: redis://redis:6379/0
+  CONTROL_RUNTIME_SHARED_SECRET: ${CONTROL_RUNTIME_SHARED_SECRET:?Set CONTROL_RUNTIME_SHARED_SECRET in .env}
+  TOOL_GATEWAY_JWT_SECRET: ${TOOL_GATEWAY_JWT_SECRET:?Set TOOL_GATEWAY_JWT_SECRET in .env}
+  TOOL_GATEWAY_JWT_ISSUER: ${TOOL_GATEWAY_JWT_ISSUER:-ess-platform}
+  AGENT_HARNESS_PROFILE: ${AGENT_HARNESS_PROFILE:-prod}
+  AGENT_HARNESS_OBSERVABILITY: ${AGENT_HARNESS_OBSERVABILITY:-local}
+  AGENT_HARNESS_MODEL_PROVIDER: ${AGENT_HARNESS_MODEL_PROVIDER:?Choose deepseek or bailian}
+  DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+  DEEPSEEK_API_KEY_FILE: ${DEEPSEEK_API_KEY_FILE:-}
+  DEEPSEEK_BASE_URL: ${DEEPSEEK_BASE_URL:-https://api.deepseek.com}
+  DEEPSEEK_MODEL: ${DEEPSEEK_MODEL:-deepseek-v4-flash}
+  DEEPSEEK_THINKING: ${DEEPSEEK_THINKING:-disabled}
+  DEEPSEEK_REASONING_EFFORT: ${DEEPSEEK_REASONING_EFFORT:-}
+  DASHSCOPE_API_KEY: ${DASHSCOPE_API_KEY:-}
+  DASHSCOPE_API_KEY_FILE: ${DASHSCOPE_API_KEY_FILE:-}
+  BAILIAN_BASE_URL: ${BAILIAN_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+  BAILIAN_MODEL: ${BAILIAN_MODEL:-qwen3.7-plus}
+  MODEL_PROVIDER_TIMEOUT_SECONDS: ${MODEL_PROVIDER_TIMEOUT_SECONDS:-90}
+  MODEL_PROVIDER_STREAM_TIMEOUT_SECONDS: ${MODEL_PROVIDER_STREAM_TIMEOUT_SECONDS:-120}
+  AGENT_HARNESS_TELEMETRY_TTL_SECONDS: ${AGENT_HARNESS_TELEMETRY_TTL_SECONDS:-30}
+  AGENT_HARNESS_TELEMETRY_SOH_TTL_SECONDS: ${AGENT_HARNESS_TELEMETRY_SOH_TTL_SECONDS:-604800}
+  AGENT_HARNESS_RAG_ENABLED: ${AGENT_HARNESS_RAG_ENABLED:-false}
+  AGENT_HARNESS_RAG_RERANKER_ENABLED: ${AGENT_HARNESS_RAG_RERANKER_ENABLED:-false}
+  AGENT_HARNESS_RAG_ROOT: ${AGENT_HARNESS_RAG_ROOT:-/app/rag_dataset_20docs}
+  RAG_CORPUS_ID: ${RAG_CORPUS_ID:-wind-sun-storage-authoritative}
+  RAG_EMBEDDING_PROVIDER: ${RAG_EMBEDDING_PROVIDER:-bailian}
+  RAG_EMBEDDING_API_KEY: ${RAG_EMBEDDING_API_KEY:-}
+  RAG_EMBEDDING_MODEL: ${RAG_EMBEDDING_MODEL:-qwen3.7-text-embedding}
+  RAG_EMBEDDING_DIMENSIONS: ${RAG_EMBEDDING_DIMENSIONS:-1024}
+  RAG_EMBEDDING_BASE_URL: ${RAG_EMBEDDING_BASE_URL:-https://dashscope.aliyuncs.com/compatible-mode/v1}
+  RAG_RERANKER_PROVIDER: ${RAG_RERANKER_PROVIDER:-tei}
+  RAG_RERANKER_MODEL: ${RAG_RERANKER_MODEL:-BAAI/bge-reranker-v2-m3}
+  RAG_RERANKER_BASE_URL: ${RAG_RERANKER_BASE_URL:-http://harness-reranker:80}
+  RAG_RERANKER_CANDIDATE_K: ${RAG_RERANKER_CANDIDATE_K:-20}
+  STATION_API_BASE_URL: ${STATION_API_BASE_URL:-}
+  STATION_API_TOKEN: ${STATION_API_TOKEN:-}
+  STATION_API_TIMEOUT_SECONDS: ${STATION_API_TIMEOUT_SECONDS:-5}
+
+x-runtime-service: &runtime-service
+  image: ${AGENT_HARNESS_IMAGE:-agent-harness-llm-providers}:${AGENT_HARNESS_IMAGE_TAG:-latest}
+  environment: *runtime-environment
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+  restart: unless-stopped
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    image: agent-harness-postgres:pg16-vector-zhparser
+    environment:
+      POSTGRES_USER: ${HARNESS_DB_USER:-agent}
+      POSTGRES_PASSWORD: ${HARNESS_DB_PASSWORD:?Set HARNESS_DB_PASSWORD in .env}
+      POSTGRES_DB: ${HARNESS_DB_NAME:-agent_harness}
+    expose:
+      - "5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./packages/storage/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${HARNESS_DB_USER:-agent} -d ${HARNESS_DB_NAME:-agent_harness}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.2-alpine
+    expose:
+      - "6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  api-gateway:
+    <<: *runtime-service
+    build:
+      context: .
+    command: uvicorn apps.api_gateway.main:app --host 0.0.0.0 --port 8000
+    ports:
+      - "${AGENT_HARNESS_BIND_HOST:-127.0.0.1}:${AGENT_HARNESS_PORT:-8000}:8000"
+    expose:
+      - "50051"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/gateway/health', timeout=2)"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  harness-control:
+    build:
+      context: .
+      dockerfile: apps/harness-control/Dockerfile
+    image: agent-harness-control:latest
+    profiles: ["frontend"]
+    environment:
+      AGENT_RUNTIME_GRPC_TARGET: api-gateway:50051
+      CONTROL_RUNTIME_SHARED_SECRET: ${CONTROL_RUNTIME_SHARED_SECRET:?Set CONTROL_RUNTIME_SHARED_SECRET in .env}
+      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
+      CONTROL_PANEL_USERNAME: ${CONTROL_PANEL_USERNAME:-admin}
+      CONTROL_PANEL_PASSWORD: ${CONTROL_PANEL_PASSWORD:?Set CONTROL_PANEL_PASSWORD in .env}
+    depends_on:
+      api-gateway:
+        condition: service_healthy
+    ports:
+      - "${HARNESS_CONTROL_BIND_HOST:-127.0.0.1}:${HARNESS_CONTROL_PORT:-3000}:3000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then((response) => { if (![200, 307].includes(response.status)) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+
+  harness-reranker-model-init:
+    profiles: ["rag-local"]
+    build:
+      context: .
+      dockerfile: Dockerfile.reranker-model-init
+    environment:
+      MODELSCOPE_MODEL_ID: ${RAG_MODELSCOPE_MODEL_ID:-AI-ModelScope/bge-reranker-v2-m3}
+      MODELSCOPE_MODEL_REVISION: ${RAG_MODELSCOPE_MODEL_REVISION:-master}
+      MODEL_TARGET_DIR: /models/bge-reranker-v2-m3
+      MODELSCOPE_DOWNLOAD_WORKERS: ${RAG_MODELSCOPE_DOWNLOAD_WORKERS:-4}
+    volumes:
+      - ./models/reranker:/models
+    restart: "no"
+
+  harness-reranker:
+    profiles: ["rag-local"]
+    image: ${RAG_RERANKER_TEI_IMAGE:-ghcr.io/huggingface/text-embeddings-inference:120-1.9}
+    depends_on:
+      harness-reranker-model-init:
+        condition: service_completed_successfully
+    command:
+      - --model-id
+      - /models/bge-reranker-v2-m3
+      - --served-model-name
+      - ${RAG_RERANKER_MODEL:-BAAI/bge-reranker-v2-m3}
+      - --dtype
+      - ${RAG_RERANKER_DTYPE:-float16}
+      - --max-client-batch-size
+      - ${RAG_RERANKER_MAX_BATCH_SIZE:-32}
+    expose:
+      - "80"
+    ports:
+      - "${RAG_RERANKER_PORT:-8089}:80"
+    volumes:
+      - ./models/reranker:/models:ro
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:80/health >/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 60
+      start_period: 30s
+    restart: unless-stopped
+
+  reflection-worker:
+    <<: *runtime-service
+    profiles: ["workers"]
+    command: python -m apps.reflection_worker.main
+
+  tool-gateway:
+    <<: *runtime-service
+    profiles: ["tool-gateway"]
+    command: uvicorn apps.tool_gateway.main:app --host 0.0.0.0 --port 8001
+    ports:
+      - "${TOOL_GATEWAY_PORT:-8001}:8001"
+
+volumes:
+  postgres-data:

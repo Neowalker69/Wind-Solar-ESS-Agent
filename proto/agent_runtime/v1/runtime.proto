@@ -1,0 +1,133 @@
+syntax = "proto3";
+
+package agent_harness.runtime.v1;
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+service AgentRuntime {
+  rpc StartTurn(StartTurnRequest) returns (StartTurnResponse);
+  rpc StreamRunEvents(StreamRunEventsRequest) returns (stream RuntimeEvent);
+  rpc GetRuntimeSnapshot(GetRuntimeSnapshotRequest) returns (GetRuntimeSnapshotResponse);
+}
+
+message ToolReference {
+  string tool_id = 1;
+  string version = 2;
+}
+
+message SkillReference {
+  string skill_id = 1;
+  string version = 2;
+}
+
+message ContextSnapshot {
+  string selected_asset_id = 1;
+  string environment = 2;
+  map<string, string> attributes = 3;
+}
+
+message PolicySnapshot {
+  repeated string visible_tool_ids = 1;
+  string workflow_stage = 2;
+}
+
+enum ApprovalStatus {
+  APPROVAL_STATUS_UNSPECIFIED = 0;
+  APPROVAL_STATUS_NOT_REQUIRED = 1;
+  APPROVAL_STATUS_REQUIRED = 2;
+  APPROVAL_STATUS_APPROVED = 3;
+  APPROVAL_STATUS_REJECTED = 4;
+}
+
+message ApprovalSnapshot {
+  ApprovalStatus status = 1;
+  string approval_id = 2;
+  string comment = 3;
+}
+
+message StartTurnRequest {
+  string session_id = 1;
+  string text = 2;
+  ContextSnapshot context = 3;
+  repeated ToolReference tool_refs = 4;
+  repeated SkillReference skill_refs = 5;
+  PolicySnapshot policy = 6;
+  ApprovalSnapshot approval = 7;
+  string run_id = 8;
+}
+
+enum RunStatus {
+  RUN_STATUS_UNSPECIFIED = 0;
+  RUN_STATUS_ACCEPTED = 1;
+  RUN_STATUS_RUNNING = 2;
+  RUN_STATUS_WAITING = 3;
+  RUN_STATUS_COMPLETED = 4;
+  RUN_STATUS_FAILED = 5;
+  RUN_STATUS_CANCELLED = 6;
+}
+
+message StartTurnResponse {
+  string run_id = 1;
+  string session_id = 2;
+  RunStatus status = 3;
+  repeated RuntimeEvent initial_events = 4;
+}
+
+message StreamRunEventsRequest {
+  string run_id = 1;
+  uint64 after_sequence = 2;
+}
+
+enum RuntimeEventType {
+  RUNTIME_EVENT_TYPE_UNSPECIFIED = 0;
+  RUNTIME_EVENT_TYPE_RUN_ACCEPTED = 1;
+  RUNTIME_EVENT_TYPE_INTENT_RESOLVED = 2;
+  RUNTIME_EVENT_TYPE_PLAN_UPDATED = 3;
+  RUNTIME_EVENT_TYPE_TOOL_SELECTED = 4;
+  RUNTIME_EVENT_TYPE_TOOL_COMPLETED = 5;
+  RUNTIME_EVENT_TYPE_EVIDENCE_UPDATED = 6;
+  RUNTIME_EVENT_TYPE_APPROVAL_REQUIRED = 7;
+  RUNTIME_EVENT_TYPE_RUN_COMPLETED = 8;
+  RUNTIME_EVENT_TYPE_RUN_FAILED = 9;
+}
+
+message RuntimeEvent {
+  string event_id = 1;
+  RuntimeEventType event_type = 2;
+  string session_id = 3;
+  string run_id = 4;
+  google.protobuf.Timestamp occurred_at = 5;
+  google.protobuf.Struct payload = 6;
+  uint64 sequence = 7;
+}
+
+message GetRuntimeSnapshotRequest {
+  string session_id = 1;
+  string run_id = 2;
+}
+
+message ToolProjection {
+  string tool_id = 1;
+  string version = 2;
+  string display_name = 3;
+  string description = 4;
+  google.protobuf.Struct input_schema = 5;
+  google.protobuf.Struct output_schema = 6;
+}
+
+message SkillProjection {
+  string skill_id = 1;
+  string version = 2;
+  string display_name = 3;
+  string description = 4;
+}
+
+message GetRuntimeSnapshotResponse {
+  string session_id = 1;
+  string run_id = 2;
+  ContextSnapshot context = 3;
+  repeated ToolProjection tools = 4;
+  repeated SkillProjection skills = 5;
+  RunStatus run_status = 6;
+}

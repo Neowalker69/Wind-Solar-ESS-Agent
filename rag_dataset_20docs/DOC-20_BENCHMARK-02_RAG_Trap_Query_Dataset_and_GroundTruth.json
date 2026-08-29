@@ -1,0 +1,610 @@
+{
+  "dataset_metadata": {
+    "dataset_name": "Wind-Solar-Storage RAG Trap & Evaluation Benchmark (30 Queries)",
+    "version": "v2.0",
+    "author": "AI Energy Operations RAG Team",
+    "total_queries": 30,
+    "categories": [
+      "Version Conflict",
+      "Work Order Analysis",
+      "Multi-hop Retrieval",
+      "Fault/Modbus Cross-Lookup",
+      "Multimodal/Topology"
+    ]
+  },
+  "queries": [
+    {
+      "query_id": "Q-01",
+      "category": "Version Conflict",
+      "query_text": "根据最新 SOP，WTG-8000D 偏航系统制动保压压力标准整定值是多少？为什么工单 WO-W20260715-089 的偏航维保方案被驳回？",
+      "target_documents": [
+        "SOP-W01_Yaw_System_Troubleshooting_SOP.md",
+        "SOP-W01-2024_Legacy.md",
+        "WO-W20260715-089.md"
+      ],
+      "trap_explanation": "测试 Agent 能否识别废弃版本 SOP-W01-2024 与最新版本 SOP-W01-2026 的参数冲突，不被旧版本（110-130 bar）误导。",
+      "ground_truth_answer": "根据最新 SOP-W01-2026 规范，WTG-8000D 偏航系统制动保压压力标准整定值为 140–160 bar（动态余压 25–35 bar，停车制动 180–200 bar）。工单 WO-W20260715-089 被驳回的原因是维保方案错误引用了已废弃的 SOP-W01-2024 旧标准（填报了 110–130 bar），未达到最新安全整定标准。",
+      "key_entities": [
+        "WTG-8000D",
+        "偏航制动压力",
+        "SOP-W01-2026",
+        "WO-W20260715-089"
+      ],
+      "evaluation_metrics": [
+        "Accuracy",
+        "Version_Disambiguation_Score",
+        "Recall"
+      ]
+    },
+    {
+      "query_id": "Q-02",
+      "category": "Version Conflict",
+      "query_text": "光伏逆变器触发 IGBT 模块过温保护的最新自动降额与关断阈值是多少？旧版规范与新版规范有何差异？",
+      "target_documents": [
+        "SOP-S01_PV_Inverter_Overheating_and_Fault_Recovery_SOP.md",
+        "SOP-S01-2023_Legacy.md"
+      ],
+      "trap_explanation": "测试 Agent 能否区分旧版与新版在 MPPT 降额与关断温度上的数值差异。",
+      "ground_truth_answer": "最新 SOP-S01-2026 规定：IGBT 模块 NTC 温度达到 95°C 时触发自动 MPPT 功率降额，达到 100°C 时触发关断停机。旧版 SOP-S01-2023 的降额阈值为 90°C，关断阈值为 105°C。新版降低了关断阈值以保护 IGBT 寿命。",
+      "key_entities": [
+        "PV_Inverter",
+        "IGBT过温",
+        "MPPT降额",
+        "SOP-S01-2026"
+      ],
+      "evaluation_metrics": [
+        "Accuracy",
+        "Version_Diff_Precision"
+      ]
+    },
+    {
+      "query_id": "Q-03",
+      "category": "Version Conflict",
+      "query_text": "储能电池舱绝缘电阻（R_iso）合格合格标准在最新手册与旧版手册中要求有何变化？",
+      "target_documents": [
+        "MAN-E01_5MW_10MWh_PCS_Stepup_Integrated_Container_Manual.md",
+        "MAN-E01-2022_Legacy.md"
+      ],
+      "trap_explanation": "测试 R_iso 绝缘电阻测试标准的演进比对（>100 MΩ vs 旧标准 >10 MΩ）。",
+      "ground_truth_answer": "最新手册 MAN-E01-2026 要求直流量母线及电池簇对地绝缘电阻 R_iso 必须大于等于 100 MΩ（1000V DC 摇表下）。而旧版 MAN-E01-2022 旧标准仅要求大于 10 MΩ。",
+      "key_entities": [
+        "绝缘电阻",
+        "R_iso",
+        "BESS",
+        "MAN-E01-2026"
+      ],
+      "evaluation_metrics": [
+        "Accuracy",
+        "Numeric_Comparison_Precision"
+      ]
+    },
+    {
+      "query_id": "Q-04",
+      "category": "Version Conflict",
+      "query_text": "110kV PCC 防孤岛保护中 ROCOF (df/dt) 频率变化率整定值最新规范要求是多少？",
+      "target_documents": [
+        "DOC-15_SOP-G101_PCC_AntiIslanding_and_BlackStart_SOP.md",
+        "SOP-G101-2022_Legacy.md"
+      ],
+      "trap_explanation": "测试 ROCOF 保护整定值在不同版本 SOP 中的差异识别（1.5 Hz/s vs 2.0 Hz/s）。",
+      "ground_truth_answer": "最新 SOP-G101-2026 整定值为 1.5 Hz/s（动作延时 0.05 s）。旧版 SOP-G101-2022 中整定值为 2.0 Hz/s。最新规范提高了频变敏感度以满足新国标。",
+      "key_entities": [
+        "ROCOF",
+        "df/dt",
+        "SOP-G101-2026",
+        "防孤岛保护"
+      ],
+      "evaluation_metrics": [
+        "Accuracy",
+        "Version_Control_Recall"
+      ]
+    },
+    {
+      "query_id": "Q-05",
+      "category": "Version Conflict",
+      "query_text": "工单 WO-S20260512-014 中提到的组串隐裂替换二极管型号与当前 Playbook 规范是否一致？",
+      "target_documents": [
+        "PLB-S02_PV_Array_Hot_Spot_and_String_Power_Drop_Playbook.md",
+        "WO-S20260512-014.md"
+      ],
+      "trap_explanation": "测试工单填报配件型号与正式 Playbook 规范之间的矛盾诊断。",
+      "ground_truth_answer": "不一致。工单 WO-S20260512-014 登记安装了 15A 肖特基二极管，而最新的 PLB-S02-2026 Playbook 明确要求 1500V 高压组串必须统一配置 25A/1600V 防反二极管，15A 规格存在高温击穿隐患。",
+      "key_entities": [
+        "二极管规格",
+        "PLB-S02",
+        "WO-S20260512-014"
+      ],
+      "evaluation_metrics": [
+        "Conflict_Detection_Score",
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-06",
+      "category": "Version Conflict",
+      "query_text": "黑启动过程中 PCS 构网型（GFM）下垂系数 kp 与 kq 在 v2.1 版本中最新设定为多少？",
+      "target_documents": [
+        "DOC-15_SOP-G101_PCC_AntiIslanding_and_BlackStart_SOP.md"
+      ],
+      "trap_explanation": "测试对 GFM 下垂控制参数精准提炼能力。",
+      "ground_truth_answer": "在 SOP-G101-2026 v2.1 版本中，PCS 构网型（GFM/VSG）模式的 P-f 下垂系数 kp 设定为 2.0%，Q-V 下垂系数 kq 设定为 3.0%，虚拟惯量 M=6.0s。",
+      "key_entities": [
+        "GFM",
+        "下垂控制",
+        "kp/kq",
+        "SOP-G101"
+      ],
+      "evaluation_metrics": [
+        "Accuracy",
+        "Parameter_Exactness"
+      ]
+    },
+    {
+      "query_id": "Q-07",
+      "category": "Work Order Analysis",
+      "query_text": "在事故工单 WO-E20260810-003 中，储能舱热失控响应为何发生延迟？违反了 SOP 的哪条规定？",
+      "target_documents": [
+        "SOP-E01_LFP_BESS_Thermal_Runaway_Emergency_SOP.md",
+        "WO-E20260810-003.md"
+      ],
+      "trap_explanation": "测试 Agent 从事故工单日志中分析违规原因及对应 SOP 条款。",
+      "ground_truth_answer": "工单记录显示，值班人员在 14:02 收到 CO 浓度达到 22 ppm 的一极预警（E-BMS-401）时误判为传感器毛刺并手动屏蔽告警，未按 SOP-E01 第 3.1 条规定启动强排风风机；导致 14:15 电池温度飙升至 72°C 进入二级告警，造成响应延迟 13 分钟。",
+      "key_entities": [
+        "WO-E20260810-003",
+        "热失控延迟",
+        "SOP-E01",
+        "一极预警"
+      ],
+      "evaluation_metrics": [
+        "Causality_Reasoning_Score",
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-08",
+      "category": "Work Order Analysis",
+      "query_text": "工单 WO-W20260601-002 记载齿轮箱油压降至 0.9 bar 时运维人员执行了手动重启，该行为是否存在重大安全风险？",
+      "target_documents": [
+        "PLB-W02_Gearbox_Lubrication_Pressure_Drop_Playbook.md",
+        "WO-W20260601-002.md"
+      ],
+      "trap_explanation": "测试事故工单中违规强送电行为与 Playbook 禁令的比对。",
+      "ground_truth_answer": "存在重大风险。PLB-W02 明确规定：当齿轮箱油压低于 0.8 bar 触发急停后，或油压处于 0.8–1.2 bar 范围未查明漏油原因前，严禁手动强行重启风机，否则可能导致齿轮抱死与打齿烧毁。",
+      "key_entities": [
+        "WO-W20260601-002",
+        "PLB-W02",
+        "强行重启风险"
+      ],
+      "evaluation_metrics": [
+        "Safety_Rule_Compliance",
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-09",
+      "category": "Work Order Analysis",
+      "query_text": "分析工单 WO-S20260720-011，为什么组串逆变器清洗后依然报绝缘阻抗偏低故障？",
+      "target_documents": [
+        "SOP-S01_PV_Inverter_Overheating_and_Fault_Recovery_SOP.md",
+        "WO-S20260720-011.md"
+      ],
+      "trap_explanation": "测试清洗作业未晾干引发二次故障的工单归因能力。",
+      "ground_truth_answer": "工单记录显示运维人员在水洗逆变器散热片后，未彻底干燥组串接线盒及 MC4 接口即带电合闸，导致组串直流侧对地绝缘电阻仍低于 100 kΩ，触发 E-PCS-501/绝缘低保护。",
+      "key_entities": [
+        "WO-S20260720-011",
+        "绝缘电阻低",
+        "水洗积水"
+      ],
+      "evaluation_metrics": [
+        "Root_Cause_Analysis_Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-10",
+      "category": "Work Order Analysis",
+      "query_text": "工单 WO-G20260405-001 中，黑启动第 5 步合闸时造成 35kV 母线过流跳闸的原因是什么？",
+      "target_documents": [
+        "DOC-15_SOP-G101_PCC_AntiIslanding_and_BlackStart_SOP.md",
+        "WO-G20260405-001.md"
+      ],
+      "trap_explanation": "测试黑启动步骤顺序错误引发事故的工单核查。",
+      "ground_truth_answer": "工单记录显示运维人员在执行第 5 步时未提前切断光伏与风电馈线断路器，带负载启动 PCS 导致变压器励磁涌流与重负载叠加，触发 35kV 母线过流保护跳闸。违反了 SOP-G101 步骤 2 必须先隔离风光负载的要求。",
+      "key_entities": [
+        "WO-G20260405-001",
+        "黑启动跳闸",
+        "SOP-G101"
+      ],
+      "evaluation_metrics": [
+        "Sequence_Verification_Score"
+      ]
+    },
+    {
+      "query_id": "Q-11",
+      "category": "Work Order Analysis",
+      "query_text": "查阅工单 WO-E20260330-008，七氟丙烷气体灭火系统误喷的原因是什么？",
+      "target_documents": [
+        "SOP-E01_LFP_BESS_Thermal_Runaway_Emergency_SOP.md",
+        "WO-E20260330-008.md"
+      ],
+      "trap_explanation": "测试灭火联锁误触发原因检索。",
+      "ground_truth_answer": "工单记录显示施工人员在电池舱内进行热缩管打磨时，未将气灭系统切至“手动”模式，粉尘触发光电烟感且热枪触发温感，满足双重探头联动判定，导致气体灭火系统误喷放。",
+      "key_entities": [
+        "WO-E20260330-008",
+        "误喷放",
+        "SOP-E01"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-12",
+      "category": "Work Order Analysis",
+      "query_text": "检修工单 WO-W20260218-005 中，偏航电机更换后偏航方向反向运转的原因是什么？如何纠正？",
+      "target_documents": [
+        "SOP-W01_Yaw_System_Troubleshooting_SOP.md",
+        "WO-W20260218-005.md"
+      ],
+      "trap_explanation": "测试偏航电机相序接反问题的排查与解决。",
+      "ground_truth_answer": "原因是偏航三相异步电机电源线 U/V/W 相序接反。纠正方法：断开偏航驱动主断路器并执行 LOTO，将三相电源线中任意两相（如 U 相与 V 相）对调接线后重新测相序。",
+      "key_entities": [
+        "WO-W20260218-005",
+        "偏航相序",
+        "SOP-W01"
+      ],
+      "evaluation_metrics": [
+        "Troubleshooting_Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-13",
+      "category": "Multi-hop Retrieval",
+      "query_text": "风光储一体化电站中，光伏逆变器与储能 PCS 的绝缘电阻最低标准有何异同？对应的测试仪器与电压级别是多少？",
+      "target_documents": [
+        "SOP-S01_PV_Inverter_Overheating_and_Fault_Recovery_SOP.md",
+        "MAN-E01_5MW_10MWh_PCS_Stepup_Integrated_Container_Manual.md"
+      ],
+      "trap_explanation": "测试跨设备（光伏逆变器 vs 储能 PCS）绝缘参数比对与测试规范整合。",
+      "ground_truth_answer": "异同点：两者标准一致，直流侧对地绝缘电阻规范要求均须大于等于 100 MΩ。测试要求：均需使用 1000V DC 兆欧表（摇表），在断开交流并网点断路器及直流进线开关后进行测量。",
+      "key_entities": [
+        "绝缘电阻",
+        "光伏逆变器",
+        "储能PCS",
+        "100MΩ"
+      ],
+      "evaluation_metrics": [
+        "Cross_Doc_Comparison_Score"
+      ]
+    },
+    {
+      "query_id": "Q-14",
+      "category": "Multi-hop Retrieval",
+      "query_text": "比较风机偏航系统与储能液冷循环系统的压力参数指标及对应介质要求。",
+      "target_documents": [
+        "SOP-W01_Yaw_System_Troubleshooting_SOP.md",
+        "MAN-E01_5MW_10MWh_PCS_Stepup_Integrated_Container_Manual.md"
+      ],
+      "trap_explanation": "测试跨风电与储能系统的多参数对比。",
+      "ground_truth_answer": "风机偏航系统：主动制动保压 140–160 bar，动态余压 25–35 bar，工作介质为 46号抗磨液压油（清洁度 NAS 7级）。储能液冷系统：循环回路运行压力 1.5–2.5 bar，工作介质为 50% 乙二醇水溶液防冻液。",
+      "key_entities": [
+        "偏航压力",
+        "液冷压力",
+        "NAS 7",
+        "乙二醇"
+      ],
+      "evaluation_metrics": [
+        "Multi_Hop_Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-15",
+      "category": "Multi-hop Retrieval",
+      "query_text": "当电网频率升至 50.8 Hz 时，风电、光伏与储能系统分别会触发什么响应动作？",
+      "target_documents": [
+        "DOC-15_SOP-G101_PCC_AntiIslanding_and_BlackStart_SOP.md",
+        "DOC-16_SPEC-G102_Hybrid_Plant_AGC_AVC_Control_Spec.md"
+      ],
+      "trap_explanation": "测试高频环境下风光储三端联合响应动作提取。",
+      "ground_truth_answer": "50.8 Hz 超出 50.5 Hz 高频一级预警点：1. 光伏与风电触发高频主动降额切机；2. 储能系统（BESS）优先接收 AGC 充电机理指令，以最大许可功率充电吸收过剩有功；3. 整体控制系统不触发 51.5 Hz 离网跳闸。",
+      "key_entities": [
+        "高频响应",
+        "50.8Hz",
+        "AGC充电"
+      ],
+      "evaluation_metrics": [
+        "Synthesis_Quality"
+      ]
+    },
+    {
+      "query_id": "Q-16",
+      "category": "Multi-hop Retrieval",
+      "query_text": "风电齿轮箱主油路压力低于 1.2 bar 与低于 0.8 bar 时，SCADA 与安全链的动作有何区别？",
+      "target_documents": [
+        "PLB-W02_Gearbox_Lubrication_Pressure_Drop_Playbook.md"
+      ],
+      "trap_explanation": "测试阈值阶梯响应动作抽取。",
+      "ground_truth_answer": "低于 1.2 bar 时：触发一级告警，SCADA 报警并自动启动备用电动润滑油泵；低于 0.8 bar 时：触发二级急停，风机安全链瞬时跳闸，3秒内切网并执行变桨顺桨，严禁自动复位。",
+      "key_entities": [
+        "齿轮箱油压",
+        "1.2bar",
+        "0.8bar"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-17",
+      "category": "Multi-hop Retrieval",
+      "query_text": "风光储联合 AGC 系统在进行有功功率分配时，对储能系统（BESS）的 SoC 有哪些区间限制？",
+      "target_documents": [
+        "DOC-16_SPEC-G102_Hybrid_Plant_AGC_AVC_Control_Spec.md"
+      ],
+      "trap_explanation": "测试对 AGC 算法中 SoC 四段式约束条件的精准获取。",
+      "ground_truth_answer": "1. 40%–70%（健康区间）：权重系数 1.0，全功能参与；2. 20%–40%（偏低区间）：限制放电，优先充电；3. <20%（低上限）：强制退出 AGC 放电；4. >80%（偏高区间）：限制充电，优先放电。",
+      "key_entities": [
+        "SoC区间",
+        "AGC分配",
+        "SPEC-G102"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-18",
+      "category": "Multi-hop Retrieval",
+      "query_text": "电站通信中断超过 5.0 秒后，联合 AGC/AVC 控制系统会采取什么降级保护策略？",
+      "target_documents": [
+        "DOC-16_SPEC-G102_Hybrid_Plant_AGC_AVC_Control_Spec.md"
+      ],
+      "trap_explanation": "测试通信异常降级防线参数获取。",
+      "ground_truth_answer": "与调度通信中断 >5.0 秒后，系统保持当前功率出线 30 秒，随后以 10 MW/min 的速率平滑降功率至 50% 额定备用功率。若与储能 BMS 通信中断 >1.0 秒，PCS 立即退出联合控制切回本地模式。",
+      "key_entities": [
+        "通信中断",
+        "降级策略",
+        "10MW/min"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-19",
+      "category": "Fault/Modbus Cross-Lookup",
+      "query_text": "故障码 E-BMS-403 代表什么故障？其 Modbus 寄存器地址是多少？对应的 SOP 处置要求是什么？",
+      "target_documents": [
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "SOP-E01_LFP_BESS_Thermal_Runaway_Emergency_SOP.md"
+      ],
+      "trap_explanation": "测试跨 JSON 字典与 Markdown SOP 的故障码-寄存器-处置流程交叉查询。",
+      "ground_truth_answer": "E-BMS-403 为储能舱三级热失控/灭火系统联动喷放故障。Modbus 寄存器地址为 40108 (UINT16 Bitmask)。SOP 要求：跳开 35kV PCS 主断路器，关闭进排风阀，延时 30 秒喷放灭火剂，拉响警报并全员撤离。",
+      "key_entities": [
+        "E-BMS-403",
+        "Modbus 40108",
+        "三级热失控",
+        "SOP-E01"
+      ],
+      "evaluation_metrics": [
+        "Cross_Modal_Mapping_Score",
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-20",
+      "category": "Fault/Modbus Cross-Lookup",
+      "query_text": "若 MODBUS 寄存器 30208 读数为 75 (Scale 0.01)，代表什么物理量？会触发什么故障码与保护动作？",
+      "target_documents": [
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "PLB-W02_Gearbox_Lubrication_Pressure_Drop_Playbook.md"
+      ],
+      "trap_explanation": "测试从 Modbus 地址及数值换算反查故障码及保护动作。",
+      "ground_truth_answer": "地址 30208 代表风电齿轮箱主油路压力。读数 75 乘 0.01 换算为 0.75 bar。由于 <0.8 bar，触发故障码 FC-208（齿轮箱油压异常降压急停），引发风机二级急停跳闸与顺桨。",
+      "key_entities": [
+        "30208",
+        "0.75bar",
+        "FC-208",
+        "PLB-W02"
+      ],
+      "evaluation_metrics": [
+        "Calculation_and_Lookup_Score"
+      ]
+    },
+    {
+      "query_id": "Q-21",
+      "category": "Fault/Modbus Cross-Lookup",
+      "query_text": "故障码 FC-201 与 FC-205 分别对应风机的什么故障？对应的 Modbus 寄存器地址分别是多少？",
+      "target_documents": [
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "SOP-W01_Yaw_System_Troubleshooting_SOP.md"
+      ],
+      "trap_explanation": "测试风电偏航两个核心故障码的批量交叉查找。",
+      "ground_truth_answer": "FC-201：偏航电机过载/驱动回路电流超限，Modbus 地址 30201；FC-205：机组偏航扭缆超限（角度 >720 度），Modbus 地址 30205。",
+      "key_entities": [
+        "FC-201",
+        "FC-205",
+        "30201",
+        "30205"
+      ],
+      "evaluation_metrics": [
+        "Batch_Lookup_Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-22",
+      "category": "Fault/Modbus Cross-Lookup",
+      "query_text": "储能电池舱一极 CO 预警（E-BMS-401）的 Modbus 寄存器地址、触发阈值及恢复条件是什么？",
+      "target_documents": [
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "SOP-E01_LFP_BESS_Thermal_Runaway_Emergency_SOP.md"
+      ],
+      "trap_explanation": "测试预警类故障码与 Modbus 地址及气体恢复条件匹配。",
+      "ground_truth_answer": "地址为 40101 (UINT16, ppm)。触发阈值：CO 浓度 > 20 ppm。恢复条件：强排风后 CO 浓度下降至 5 ppm 以下，且经气体检测合格。",
+      "key_entities": [
+        "E-BMS-401",
+        "40101",
+        "20ppm",
+        "5ppm"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-23",
+      "category": "Fault/Modbus Cross-Lookup",
+      "query_text": "Modbus 地址 40501 读取的物理量是什么？若读数为 50 代表什么含义？需执行哪项 SOP？",
+      "target_documents": [
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "MAN-E01_5MW_10MWh_PCS_Stepup_Integrated_Container_Manual.md"
+      ],
+      "trap_explanation": "测试绝缘电阻单位 kΩ 到 MΩ 的数值换算与 SOP 关联。",
+      "ground_truth_answer": "地址 40501 代表 PCS 直流母线绝缘电阻（UINT32, kΩ）。读数 50 代表绝缘电阻为 50 kΩ。由于 <100 kΩ 触发 E-PCS-501（直流母线绝缘故障），需执行 MAN-E01 分段绝缘摇测与排查程序。",
+      "key_entities": [
+        "40501",
+        "50kΩ",
+        "E-PCS-501",
+        "MAN-E01"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-24",
+      "category": "Fault/Modbus Cross-Lookup",
+      "query_text": "光伏逆变器故障码 E-INV-301 的触发传感器、寄存器地址及复位条件是什么？",
+      "target_documents": [
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "SOP-S01_PV_Inverter_Overheating_and_Fault_Recovery_SOP.md"
+      ],
+      "trap_explanation": "测试逆变器过温故障码完整字段检索。",
+      "ground_truth_answer": "传感器：IGBT 内部 NTC 测温；寄存器地址：31005 (INT16, 0.1°C)；触发：>95°C 降额，>100°C 关断；复位条件：IGBT 温度降至 70°C 以下且风扇故障消除。",
+      "key_entities": [
+        "E-INV-301",
+        "31005",
+        "NTC",
+        "70°C"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-25",
+      "category": "Multimodal/Topology",
+      "query_text": "根据 DOC-18 应急响应流程图，储能热失控从一极预警演变成三级急停过程中，灭火剂喷放前有几秒延时？原因是什么？",
+      "target_documents": [
+        "DOC-18_DIAG-01_BESS_Emergency_Response_Flowchart.svg",
+        "SOP-E01_LFP_BESS_Thermal_Runaway_Emergency_SOP.md"
+      ],
+      "trap_explanation": "测试结合 SVG 流程图与 SOP 文本回答延时与安全避险原理。",
+      "ground_truth_answer": "灭火剂喷放前有 30 秒延时。原因：给舱内作业人员提供声光警报撤离时间，并确保进排风阀与防爆阀已完全关闭，形成密闭灭火空间。",
+      "key_entities": [
+        "DOC-18",
+        "30秒延时",
+        "人员撤离"
+      ],
+      "evaluation_metrics": [
+        "Multimodal_Reasoning_Score"
+      ]
+    },
+    {
+      "query_id": "Q-26",
+      "category": "Multimodal/Topology",
+      "query_text": "根据 DOC-19 系统拓扑图，风电、光伏与储能系统是通过什么电压等级汇集到电网 PCC 的？主变压器变比是多少？",
+      "target_documents": [
+        "DOC-19_DIAG-02_Hybrid_Plant_Grid_Topology.png",
+        "DOC-15_SOP-G101_PCC_AntiIslanding_and_BlackStart_SOP.md"
+      ],
+      "trap_explanation": "测试对系统拓扑图（PNG）中电气主接线与电压等级的解析。",
+      "ground_truth_answer": "风电（100MW）、光伏（100MW）及储能（50MW/100MWh）均通过 35kV 内部汇集线接入升压站 35kV 母线，经主变压器升压至 110kV 后接入 110kV PCC 电网。主变压器变比为 35kV / 110kV。",
+      "key_entities": [
+        "DOC-19",
+        "35kV",
+        "110kV",
+        "主变压器"
+      ],
+      "evaluation_metrics": [
+        "Image_Understanding_Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-27",
+      "category": "Multimodal/Topology",
+      "query_text": "黑启动过程中，从 DOC-18 的复核规则来看，现场气体检测 CO 和 O2 的安全门限分别是多少？",
+      "target_documents": [
+        "DOC-18_DIAG-01_BESS_Emergency_Response_Flowchart.svg"
+      ],
+      "trap_explanation": "测试从 SVG 矢量图中精准提取 EHS 气体安全门限。",
+      "ground_truth_answer": "现场气体检测合格门限为：一氧化碳 CO < 5 ppm，氧气 O2 > 20.9%，且佩戴正压式空气呼吸器方可入舱。",
+      "key_entities": [
+        "CO < 5ppm",
+        "O2 > 20.9%",
+        "DOC-18"
+      ],
+      "evaluation_metrics": [
+        "Visual_Extraction_Precision"
+      ]
+    },
+    {
+      "query_id": "Q-28",
+      "category": "Multimodal/Topology",
+      "query_text": "在 DOC-19 拓扑图中，二次控制网（EMS / AGC-AVC Controller）与各个子系统之间采用什么信号连接方式？",
+      "target_documents": [
+        "DOC-19_DIAG-02_Hybrid_Plant_Grid_Topology.png",
+        "DOC-16_SPEC-G102_Hybrid_Plant_AGC_AVC_Control_Spec.md"
+      ],
+      "trap_explanation": "测试结合拓扑图控制虚线与技术规范理解二次控制网。",
+      "ground_truth_answer": "采用双向冗余光纤以太网总线（IEC 60870-5-104 / Modbus TCP 协议），在图拓扑中以蓝色虚线箭头连接，实现毫秒级控制指令下发。",
+      "key_entities": [
+        "DOC-19",
+        "二次控制网",
+        "光纤总线"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-29",
+      "category": "Multimodal/Topology",
+      "query_text": "综合 SOP-G101 与 DOC-19，黑启动第 6 步通过 PCS 建立 35kV 母线电压时，应该关注哪个母线的电压表？",
+      "target_documents": [
+        "DOC-15_SOP-G101_PCC_AntiIslanding_and_BlackStart_SOP.md",
+        "DOC-19_DIAG-02_Hybrid_Plant_Grid_Topology.png"
+      ],
+      "trap_explanation": "测试结合操作步骤与拓扑图定位监视仪表。",
+      "ground_truth_answer": "应监视 35kV 厂用集电线路母线（35kV Collector Bus）的三相电压表，确保建压斜坡平滑升至 35kV 额定电压。",
+      "key_entities": [
+        "35kV母线",
+        "黑启动第6步",
+        "SOP-G101"
+      ],
+      "evaluation_metrics": [
+        "Accuracy"
+      ]
+    },
+    {
+      "query_id": "Q-30",
+      "category": "Multimodal/Topology",
+      "query_text": "假定发生三级热失控，Agent 在自动化处置时应调用哪些文件与图表构成完整证据链？",
+      "target_documents": [
+        "SOP-E01_LFP_BESS_Thermal_Runaway_Emergency_SOP.md",
+        "DOC-17_DICT-01_Unified_Fault_Code_and_Modbus_Register.json",
+        "DOC-18_DIAG-01_BESS_Emergency_Response_Flowchart.svg"
+      ],
+      "trap_explanation": "测试 Agent 构建多文档+图表+字典联合证据链的能力。",
+      "ground_truth_answer": "完整证据链包括：1. DOC-17 查得 E-BMS-403 触发码及 Modbus 40108 寄存器；2. SOP-E01 确定三级急停跳闸与喷放处置程序；3. DOC-18 图表核对 30 秒延时避险与 EHS 入舱隔离复核要求。",
+      "key_entities": [
+        "证据链构建",
+        "SOP-E01",
+        "DOC-17",
+        "DOC-18"
+      ],
+      "evaluation_metrics": [
+        "Comprehensive_RAG_Score"
+      ]
+    }
+  ]
+}

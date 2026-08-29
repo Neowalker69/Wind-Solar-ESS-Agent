@@ -1,0 +1,15 @@
+ALTER TABLE runs
+  ADD COLUMN IF NOT EXISTS record JSONB NOT NULL DEFAULT '{}';
+
+ALTER TABLE trace_events
+  ADD COLUMN IF NOT EXISTS record_id TEXT,
+  ADD COLUMN IF NOT EXISTS record JSONB NOT NULL DEFAULT '{}';
+
+CREATE UNIQUE INDEX IF NOT EXISTS trace_events_record_id_idx
+  ON trace_events (record_id);
+
+ALTER TABLE evidence_records
+  ADD COLUMN IF NOT EXISTS record JSONB NOT NULL DEFAULT '{}';
+
+ALTER TABLE plugin_installations
+  ADD COLUMN IF NOT EXISTS record JSONB NOT NULL DEFAULT '{}';

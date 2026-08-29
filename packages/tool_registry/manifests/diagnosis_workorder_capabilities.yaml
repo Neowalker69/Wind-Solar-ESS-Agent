@@ -1,0 +1,34 @@
+tools:
+  - tool_id: diagnosis.generate_evidence_bundle
+    capability: diagnosis
+    classification: derived
+    readable: true
+    dependencies: [evidence_repository]
+    description: 汇总当前运行的证据记录。
+    handler: packages.capabilities.diagnosis.handlers:generate_evidence_bundle
+    risk_level: L1
+  - tool_id: diagnosis.validate_evidence_completeness
+    capability: diagnosis
+    classification: derived
+    readable: true
+    dependencies: [evidence_repository]
+    description: 检查诊断证据是否完整。
+    handler: packages.capabilities.diagnosis.handlers:validate_evidence_completeness
+    risk_level: L1
+  - tool_id: diagnosis.rank_root_causes
+    capability: diagnosis
+    classification: derived
+    readable: true
+    dependencies: [authoritative_evidence]
+    description: 执行根因候选排序；诊断或根因意图必须调用，当前 Run 证据不足时返回 no_data 和缺失项。
+    handler: packages.capabilities.diagnosis.handlers:rank_root_causes
+    risk_level: L1
+    disclosure: deferred
+  - tool_id: workorder.create_work_order_draft
+    capability: workorder
+    classification: derived
+    readable: true
+    dependencies: [authoritative_evidence, durable_workflow]
+    description: 创建引用证据的工单草稿。
+    handler: packages.capabilities.diagnosis.handlers:create_work_order_draft
+    risk_level: L1

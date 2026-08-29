@@ -1,0 +1,309 @@
+tools:
+  - tool_id: asset.get_asset
+    capability: asset
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询资产基础信息。
+    handler: packages.capabilities.asset.handlers:get_asset
+  - tool_id: asset.list_assets
+    capability: asset
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询当前站点资产列表。
+    handler: packages.capabilities.asset.handlers:list_assets
+    disclosure: deferred
+  - tool_id: asset.resolve_asset_alias
+    capability: asset
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_asset_connector_not_implemented
+    dependencies: [station_api]
+    description: 将自然语言资产别名解析为资产 ID。
+    handler: packages.capabilities.asset.handlers:resolve_asset_alias
+  - tool_id: asset.get_asset_topology
+    capability: asset
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_asset_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询资产上下游拓扑。
+    handler: packages.capabilities.asset.handlers:get_asset_topology
+  - tool_id: asset.get_asset_components
+    capability: asset
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_asset_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询资产部件与传感器。
+    handler: packages.capabilities.asset.handlers:get_asset_components
+    disclosure: deferred
+  - tool_id: asset.get_asset_status
+    capability: asset
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询资产当前状态。
+    handler: packages.capabilities.asset.handlers:get_asset_status
+  - tool_id: asset.get_asset_criticality
+    capability: asset
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_asset_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询资产关键等级。
+    handler: packages.capabilities.asset.handlers:get_asset_criticality
+  - tool_id: asset.get_related_assets
+    capability: asset
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_asset_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询关联资产。
+    handler: packages.capabilities.asset.handlers:get_related_assets
+    disclosure: deferred
+  - tool_id: asset.get_asset_manual_refs
+    capability: asset
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_asset_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询资产相关手册索引。
+    handler: packages.capabilities.asset.handlers:get_asset_manual_refs
+    disclosure: deferred
+
+  - tool_id: telemetry.get_latest_value
+    capability: telemetry
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询单个指标最新遥测值。
+    input_schema:
+      type: object
+      properties:
+        metric:
+          type: string
+          description: Station API 指标键。
+          enum: [power_kw, temperature, soc, soh]
+      required: [metric]
+      additionalProperties: false
+    handler: packages.capabilities.telemetry.handlers:get_latest_value
+  - tool_id: telemetry.get_latest_telemetry
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询资产的最新遥测值集合。
+    handler: packages.capabilities.telemetry.handlers:get_latest_telemetry
+  - tool_id: telemetry.get_timeseries
+    capability: telemetry
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询指标时序趋势。
+    input_schema:
+      type: object
+      properties:
+        metric:
+          type: string
+          description: Station API 指标键。
+          enum: [power_kw, temperature, soc, soh]
+        start:
+          type: string
+          description: ISO 8601 查询起始时间；由运行时按场站时间范围补齐。
+          format: date-time
+        end:
+          type: string
+          description: ISO 8601 查询结束时间；由运行时按场站时间范围补齐。
+          format: date-time
+        interval:
+          type: string
+          description: 聚合粒度。
+          enum: [1m, 5m, 1h]
+        aggregation:
+          type: string
+          description: 聚合函数。
+          enum: [avg, min, max, sum]
+      required: [metric, start, end]
+      additionalProperties: false
+    handler: packages.capabilities.telemetry.handlers:get_timeseries
+  - tool_id: telemetry.list_available_metrics
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询资产可用指标。
+    handler: packages.capabilities.telemetry.handlers:list_available_metrics
+    disclosure: deferred
+  - tool_id: telemetry.get_point_mapping
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询指标 OPC UA 点位映射。
+    handler: packages.capabilities.telemetry.handlers:get_point_mapping
+    disclosure: deferred
+  - tool_id: telemetry.compare_baseline
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 将当前值与基线比较。
+    handler: packages.capabilities.telemetry.handlers:compare_baseline
+    risk_level: L1
+    disclosure: deferred
+  - tool_id: telemetry.compute_trend
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 计算时序趋势。
+    handler: packages.capabilities.telemetry.handlers:compute_trend
+    risk_level: L1
+    disclosure: deferred
+  - tool_id: telemetry.validate_data_quality
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 验证遥测数据质量。
+    handler: packages.capabilities.telemetry.handlers:validate_data_quality
+    risk_level: L1
+  - tool_id: telemetry.detect_missing_data
+    capability: telemetry
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_telemetry_connector_not_implemented
+    dependencies: [station_api]
+    description: 检测遥测缺失数据。
+    handler: packages.capabilities.telemetry.handlers:detect_missing_data
+    risk_level: L1
+    disclosure: deferred
+
+  - tool_id: alarm.get_active_alarms
+    capability: alarm
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询当前活动告警。
+    handler: packages.capabilities.alarm.handlers:get_active_alarms
+  - tool_id: alarm.get_alarm_detail
+    capability: alarm
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询告警详情。
+    handler: packages.capabilities.alarm.handlers:get_alarm_detail
+  - tool_id: alarm.get_alarm_history
+    capability: alarm
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询资产告警历史。
+    handler: packages.capabilities.alarm.handlers:get_alarm_history
+  - tool_id: alarm.get_alarms_correlate
+    capability: alarm
+    classification: unavailable
+    readable: false
+    unavailable_reason: station_api_alarm_connector_not_implemented
+    dependencies: [station_api]
+    description: 查询告警关联关系。
+    handler: packages.capabilities.alarm.handlers:get_alarms_correlate
+    risk_level: L1
+    disclosure: deferred
+  - tool_id: alarm.get_event_timeline
+    capability: alarm
+    classification: authoritative
+    readable: true
+    dependencies: [station_api]
+    description: 查询告警事件时间线。
+    handler: packages.capabilities.alarm.handlers:get_event_timeline
+    risk_level: L1
+    disclosure: deferred
+  - tool_id: alarm.ack_alarm_draft
+    capability: alarm
+    classification: unavailable
+    readable: false
+    unavailable_reason: authoritative_alarm_lookup_not_implemented
+    dependencies: [station_api]
+    description: 生成告警确认草稿，不执行确认。
+    handler: packages.capabilities.alarm.handlers:ack_alarm_draft
+    risk_level: L2
+    disclosure: restricted
+  - tool_id: alarm.ack_alarm
+    capability: alarm
+    classification: unavailable
+    readable: false
+    unavailable_reason: production_alarm_ack_disabled
+    description: 正式告警确认；MVP 禁用生产执行。
+    handler: packages.capabilities.alarm.handlers:ack_alarm
+    risk_level: L3
+    disclosure: restricted
+
+  - tool_id: scene.locate_asset_in_scene
+    capability: scene
+    classification: unavailable
+    readable: false
+    unavailable_reason: scene_projection_connector_not_implemented
+    dependencies: [scene_projection]
+    description: 在场景投影中定位资产。
+    handler: packages.capabilities.scene.handlers:locate_asset_in_scene
+  - tool_id: scene.highlight_asset
+    capability: scene
+    classification: unavailable
+    readable: false
+    unavailable_reason: scene_projection_connector_not_implemented
+    dependencies: [scene_projection]
+    description: 生成前端高亮资产命令。
+    handler: packages.capabilities.scene.handlers:highlight_asset
+    risk_level: L1
+  - tool_id: scene.clear_highlight
+    capability: scene
+    classification: action_receipt
+    readable: true
+    description: 生成前端清除高亮命令。
+    handler: packages.capabilities.scene.handlers:clear_highlight
+    risk_level: L1
+    disclosure: deferred
+  - tool_id: scene.focus_camera_on_asset
+    capability: scene
+    classification: unavailable
+    readable: false
+    unavailable_reason: scene_projection_connector_not_implemented
+    dependencies: [scene_projection]
+    description: 生成前端聚焦资产命令。
+    handler: packages.capabilities.scene.handlers:focus_camera_on_asset
+    risk_level: L1
+  - tool_id: scene.get_selected_scene_node
+    capability: scene
+    classification: unavailable
+    readable: false
+    unavailable_reason: scene_projection_connector_not_implemented
+    dependencies: [scene_projection]
+    description: 查询当前选中场景节点。
+    handler: packages.capabilities.scene.handlers:get_selected_scene_node
+  - tool_id: scene.get_scene_node_metadata
+    capability: scene
+    classification: unavailable
+    readable: false
+    unavailable_reason: scene_projection_connector_not_implemented
+    dependencies: [scene_projection]
+    description: 查询场景节点元数据。
+    handler: packages.capabilities.scene.handlers:get_scene_node_metadata
+  - tool_id: scene.scene_snapshot
+    capability: scene
+    classification: unavailable
+    readable: false
+    unavailable_reason: scene_projection_connector_not_implemented
+    dependencies: [scene_projection]
+    description: 获取当前场景 UI 投影快照。
+    handler: packages.capabilities.scene.handlers:scene_snapshot
+    risk_level: L1
+    disclosure: deferred

@@ -1,0 +1,13 @@
+*.glb binary
+*.png binary
+*.ttf binary
+*.wasm binary
+
+*.sh text eol=lf
+*.py text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf

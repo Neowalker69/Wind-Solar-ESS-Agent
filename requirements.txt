@@ -1,0 +1,21 @@
+# Agent Harness API direct runtime requirements.
+# Canonical dependency declaration: pyproject.toml [project].dependencies
+fastapi
+uvicorn[standard]
+pydantic>=2
+httpx
+sqlalchemy>=2
+asyncpg
+psycopg[binary]>=3.2,<4
+redis
+langgraph
+dbos
+semantic-router
+pgvector
+asyncua
+opentelemetry-api
+opentelemetry-sdk
+prometheus-client
+pyyaml
+langfuse>=3,<4
+grpcio>=1.76,<2

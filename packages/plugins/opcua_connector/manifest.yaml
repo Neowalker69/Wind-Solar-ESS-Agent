@@ -1,0 +1,7 @@
+plugin_id: opcua_connector
+version: 0.1.0
+capabilities:
+  - opcua.read
+  - opcua.browse
+core_api_range: ">=0.1,<1"
+package_hash: sha256:dev

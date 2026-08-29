@@ -1,0 +1,1 @@
+"""Feishu-only API Gateway."""

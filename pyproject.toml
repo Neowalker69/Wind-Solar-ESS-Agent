@@ -1,0 +1,47 @@
+[project]
+name = "wind-solar-ess-agent"
+version = "0.1.0"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+dependencies = [
+  "fastapi",
+  "uvicorn[standard]",
+  "pydantic>=2",
+  "httpx",
+  "sqlalchemy>=2",
+  "asyncpg",
+  "psycopg[binary]>=3.2,<4",
+  "redis",
+  "langgraph",
+  "dbos",
+  "semantic-router",
+  "pgvector",
+  "asyncua",
+  "opentelemetry-api",
+  "opentelemetry-sdk",
+  "prometheus-client",
+  "pyyaml",
+  "langfuse>=3,<4",
+  "grpcio>=1.76,<2",
+]
+
+[dependency-groups]
+dev = [
+  "pytest",
+  "pytest-cov>=7,<8",
+  "pytest-asyncio",
+  "sentence-transformers",
+  "transformers",
+  "grpcio-tools>=1.76,<2",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["apps", "packages", "tests"]
+asyncio_mode = "auto"
+pythonpath = ["."]
+
+[tool.coverage.run]
+omit = ["packages/agent_runtime_rpc/generated/*"]
+
+[project.scripts]
+agent-harness-gateway = "apps.api_gateway.daemon:main"

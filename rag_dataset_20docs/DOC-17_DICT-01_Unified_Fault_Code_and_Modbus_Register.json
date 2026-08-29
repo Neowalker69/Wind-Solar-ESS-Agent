@@ -1,0 +1,287 @@
+{
+  "metadata": {
+    "dictionary_id": "DICT-01-2026",
+    "title": "风光储一体化电站全设备故障码与 Modbus 寄存器映射字典",
+    "version": "v2.4",
+    "effective_date": "2026-06-01",
+    "applicable_systems": [
+      "Wind_Turbine_PLC",
+      "PV_Inverter",
+      "BESS_BMS",
+      "BESS_PCS",
+      "Grid_PCC_Protection"
+    ]
+  },
+  "fault_codes": [
+    {
+      "fault_code": "FC-201",
+      "system": "Wind_Turbine",
+      "subsystem": "Yaw_System",
+      "severity": "Major",
+      "description": "偏航电机过载 / 驱动回路电流超限 (Yaw Motor Overload)",
+      "trigger_threshold": "偏航电机三相电流 > 18.5A 持续 5.0 秒",
+      "action_required": "切断偏航驱动电源，检查偏航减速器齿轮啮合间隙 (0.6-0.9mm) 及液压制动松闸压力 (需达 140-160 bar)",
+      "associated_sop_id": "SOP-W01-2026",
+      "modbus_mapping": {
+        "register_address": 30201,
+        "data_type": "UINT16",
+        "unit": "Bitmask",
+        "scale_factor": 1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "FC-203",
+      "system": "Wind_Turbine",
+      "subsystem": "Yaw_System",
+      "severity": "Critical",
+      "description": "偏航余压过低 / 制动盘摩擦片磨损过界 (Yaw Pressure Low)",
+      "trigger_threshold": "偏航余压保压压力 < 25 bar 或 摩擦片厚度 < 3.0mm",
+      "action_required": "报偏航锁死，启动液压泵补压；若补压失败检查溢流阀与摩擦片，禁止风机偏航追风",
+      "associated_sop_id": "SOP-W01-2026",
+      "modbus_mapping": {
+        "register_address": 30203,
+        "data_type": "UINT16",
+        "unit": "Bitmask",
+        "scale_factor": 1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "FC-205",
+      "system": "Wind_Turbine",
+      "subsystem": "Yaw_System",
+      "severity": "Critical",
+      "description": "机组偏航扭缆超限 (Yaw Cable Twist Limit Exceeded)",
+      "trigger_threshold": "偏航计数器累计同一方向旋转角度 > 720度 (单向超2圈)",
+      "action_required": "触发风机安全链停机，锁定叶片变桨角度至 88 度，运维人员进入机舱执行手动解缆程序",
+      "associated_sop_id": "SOP-W01-2026",
+      "modbus_mapping": {
+        "register_address": 30205,
+        "data_type": "UINT16",
+        "unit": "Bitmask",
+        "scale_factor": 1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "FC-208",
+      "system": "Wind_Turbine",
+      "subsystem": "Gearbox_Lubrication",
+      "severity": "Critical",
+      "description": "齿轮箱润滑油压异常降压 (Gearbox Oil Pressure Low Trip)",
+      "trigger_threshold": "齿轮箱主油路压力 < 0.8 bar 持续 3.0 秒",
+      "action_required": "立即触发风机二级急停，3秒内完成切网与变桨顺桨，启动备用直流油泵，严禁强送电重启",
+      "associated_sop_id": "PLB-W02-2026",
+      "modbus_mapping": {
+        "register_address": 30208,
+        "data_type": "UINT16",
+        "unit": "bar",
+        "scale_factor": 0.01,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "E-INV-301",
+      "system": "PV_Inverter",
+      "subsystem": "Power_Electronics_IGBT",
+      "severity": "Major",
+      "description": "逆变器 IGBT 模块过温 / 散热器堵塞保护 (Inverter Over-Temperature)",
+      "trigger_threshold": "IGBT 内部 NTC 传感器测温 > 95°C 或 散热器风道温度 > 85°C",
+      "action_required": "触发 MPPT 功率自动降额；若温度继续升至 100°C 升至关断停机。检查风扇 PWM 测速及散热片积灰",
+      "associated_sop_id": "SOP-S01-2026",
+      "modbus_mapping": {
+        "register_address": 31005,
+        "data_type": "INT16",
+        "unit": "°C",
+        "scale_factor": 0.1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "E-BMS-401",
+      "system": "BESS_Storage",
+      "subsystem": "BMS_Safety_Sensors",
+      "severity": "Minor",
+      "description": "储能电池舱一极气体探测告警 (BESS Stage 1 CO/VOC Pre-Alarm)",
+      "trigger_threshold": "电池舱内一极 CO 浓度 > 20 ppm 或 VOC 浓度明显异常升",
+      "action_required": "触发一极预警，自动启动电池舱强排风风机与空调内循环排湿，EMS 报预警通知运维人员排查",
+      "associated_sop_id": "SOP-E01-2026",
+      "modbus_mapping": {
+        "register_address": 40101,
+        "data_type": "UINT16",
+        "unit": "ppm",
+        "scale_factor": 1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "E-BMS-402",
+      "system": "BESS_Storage",
+      "subsystem": "BMS_Thermal_Management",
+      "severity": "Major",
+      "description": "储能单体电池过温及温升速率告警 (BESS Cell Over-Temperature)",
+      "trigger_threshold": "单体电池最高温度 > 65°C 或 温升速率 dT/dt > 2.0°C/min",
+      "action_required": "触发二级紧急告警，EMS 下发指令切断该电池簇 DC 塑料断路器，隔离故障簇并提高液冷循环功率",
+      "associated_sop_id": "SOP-E01-2026",
+      "modbus_mapping": {
+        "register_address": 40105,
+        "data_type": "INT16",
+        "unit": "°C",
+        "scale_factor": 0.1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "E-BMS-403",
+      "system": "BESS_Storage",
+      "subsystem": "Fire_Suppression_Interlock",
+      "severity": "Critical",
+      "description": "储能舱三级热失控 / 气体灭火系统联动喷放 (Thermal Runaway Fire Trip)",
+      "trigger_threshold": "烟感+温感双重触发，或气体灭火压力开关动作",
+      "action_required": "触发三级急停，切断 PCS 主回路断路器与舱顶进排风风阀，延迟 30 秒喷放七氟丙烷/气溶胶，拉响全站警报并人员撤离",
+      "associated_sop_id": "SOP-E01-2026",
+      "modbus_mapping": {
+        "register_address": 40108,
+        "data_type": "UINT16",
+        "unit": "Bitmask",
+        "scale_factor": 1,
+        "access": "Read-Only"
+      }
+    },
+    {
+      "fault_code": "E-PCS-501",
+      "system": "BESS_PCS",
+      "subsystem": "PCS_DC_Bus",
+      "severity": "Critical",
+      "description": "PCS 直流母线绝缘电阻降低 / 地故障 (DC Bus Insulation Fault)",
+      "trigger_threshold": "直流量母线对地绝缘电阻 R_iso < 100 kΩ (规范要求标准值 > 100 MΩ)",
+      "action_required": "立即封锁 IGBT 驱动脉冲，跳开 35kV 侧断路器与直流接触器，启动直流绝缘检测仪进行分段排查",
+      "associated_sop_id": "MAN-E01-2026",
+      "modbus_mapping": {
+        "register_address": 40501,
+        "data_type": "UINT32",
+        "unit": "kΩ",
+        "scale_factor": 1,
+        "access": "Read-Only"
+      }
+    }
+  ],
+  "modbus_register_dictionary": [
+    {
+      "system": "Wind_Turbine_PLC",
+      "start_address": 30001,
+      "registers": [
+        {
+          "address": 30001,
+          "name": "Wind_Speed",
+          "type": "FLOAT32",
+          "unit": "m/s",
+          "scale": 0.1
+        },
+        {
+          "address": 30003,
+          "name": "Rotor_RPM",
+          "type": "FLOAT32",
+          "unit": "rpm",
+          "scale": 0.1
+        },
+        {
+          "address": 30201,
+          "name": "Yaw_Fault_Code",
+          "type": "UINT16",
+          "unit": "code",
+          "scale": 1
+        },
+        {
+          "address": 30208,
+          "name": "Gearbox_Oil_Pressure",
+          "type": "UINT16",
+          "unit": "bar",
+          "scale": 0.01
+        }
+      ]
+    },
+    {
+      "system": "PV_Inverter",
+      "start_address": 31001,
+      "registers": [
+        {
+          "address": 31001,
+          "name": "DC_Voltage_String_1",
+          "type": "UINT16",
+          "unit": "V",
+          "scale": 0.1
+        },
+        {
+          "address": 31003,
+          "name": "DC_Current_String_1",
+          "type": "UINT16",
+          "unit": "A",
+          "scale": 0.01
+        },
+        {
+          "address": 31005,
+          "name": "IGBT_Temperature",
+          "type": "INT16",
+          "unit": "°C",
+          "scale": 0.1
+        }
+      ]
+    },
+    {
+      "system": "BESS_BMS",
+      "start_address": 40101,
+      "registers": [
+        {
+          "address": 40101,
+          "name": "Cabin_CO_Gas_Concentration",
+          "type": "UINT16",
+          "unit": "ppm",
+          "scale": 1
+        },
+        {
+          "address": 40105,
+          "name": "Max_Cell_Temperature",
+          "type": "INT16",
+          "unit": "°C",
+          "scale": 0.1
+        },
+        {
+          "address": 40108,
+          "name": "Thermal_Runaway_Status_Mask",
+          "type": "UINT16",
+          "unit": "bitmask",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "system": "BESS_PCS",
+      "start_address": 40501,
+      "registers": [
+        {
+          "address": 40501,
+          "name": "DC_Bus_Insulation_Resistance",
+          "type": "UINT32",
+          "unit": "kΩ",
+          "scale": 1
+        },
+        {
+          "address": 40503,
+          "name": "PCS_Active_Power_Output",
+          "type": "INT32",
+          "unit": "kW",
+          "scale": 1
+        },
+        {
+          "address": 40505,
+          "name": "PCS_Grid_Forming_Mode_Flag",
+          "type": "UINT16",
+          "unit": "flag",
+          "scale": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+RUN pip install --no-cache-dir "modelscope==1.39.1"
+
+WORKDIR /app
+COPY apps/reranker_model_init.py /app/reranker_model_init.py
+
+CMD ["python", "/app/reranker_model_init.py"]

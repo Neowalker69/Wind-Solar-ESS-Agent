@@ -1,0 +1,69 @@
+tools:
+  - tool_id: files.list_files
+    capability: files
+    classification: authoritative
+    readable: true
+    dependencies: [workspace]
+    description: 列出项目文件。
+    handler: packages.capabilities.workspace.handlers:list_files
+  - tool_id: files.search_files
+    capability: files
+    classification: authoritative
+    readable: true
+    dependencies: [workspace]
+    description: 在项目文件中检索文本。
+    handler: packages.capabilities.workspace.handlers:search_files
+  - tool_id: files.read_file
+    capability: files
+    classification: authoritative
+    readable: true
+    dependencies: [workspace]
+    description: 读取项目文件内容。
+    handler: packages.capabilities.workspace.handlers:read_file
+  - tool_id: search.search_sop
+    capability: search
+    classification: authoritative
+    readable: true
+    dependencies: [authoritative_rag_corpus]
+    description: 在版本化权威 SOP、手册与故障码资料中检索，返回来源 URI、版本和内容哈希。
+    handler: packages.capabilities.workspace.handlers:search_sop
+    input_schema:
+      type: object
+      properties:
+        query:
+          type: string
+          minLength: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 20
+        include_superseded:
+          type: boolean
+          default: false
+      required: [query]
+  - tool_id: messaging.request_human_input
+    capability: messaging
+    classification: action_receipt
+    readable: true
+    description: 生成前端人工输入请求。
+    handler: packages.capabilities.workspace.handlers:request_human_input
+    risk_level: L1
+  - tool_id: messaging.send_message_draft
+    capability: messaging
+    classification: action_receipt
+    readable: true
+    description: 生成消息草稿，不发送外部消息。
+    handler: packages.capabilities.workspace.handlers:send_message_draft
+    risk_level: L1
+  - tool_id: task.todo
+    capability: task
+    classification: runtime
+    readable: true
+    description: 查询当前运行任务清单。
+    handler: packages.capabilities.workspace.handlers:todo
+  - tool_id: task.get_workflow_status
+    capability: task
+    classification: runtime
+    readable: true
+    description: 查询当前工作流状态。
+    handler: packages.capabilities.workspace.handlers:get_workflow_status
