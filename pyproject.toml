@@ -32,7 +32,7 @@ dev = [
   "pytest-asyncio",
   "sentence-transformers",
   "transformers",
-  "grpcio-tools>=1.76,<2",
+  "grpcio-tools>=1.83.0,<2",
 ]
 
 [tool.pytest.ini_options]
