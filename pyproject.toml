@@ -10,7 +10,7 @@ dependencies = [
   "httpx",
   "sqlalchemy>=2",
   "asyncpg",
-  "psycopg[binary]>=3.2,<4",
+  "psycopg[binary]>=3.3.4,<4",
   "redis",
   "langgraph",
   "dbos",
