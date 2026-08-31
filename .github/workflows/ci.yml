@@ -54,6 +54,8 @@ jobs:
       - name: Install locked dependencies
         run: npm ci --include=dev
       - name: Run tests
+        env:
+          NODE_ENV: test
         run: npm test
       - name: Type-check
         run: npm run typecheck
