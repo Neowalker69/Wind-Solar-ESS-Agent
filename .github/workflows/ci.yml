@@ -52,7 +52,7 @@ jobs:
           cache: npm
           cache-dependency-path: apps/harness-control/package-lock.json
       - name: Install locked dependencies
-        run: npm ci
+        run: npm ci --include=dev
       - name: Run tests
         run: npm test
       - name: Type-check
